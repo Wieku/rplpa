@@ -151,8 +151,6 @@ func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 
 	sa := strings.Split(s, ",")
 
-	fmt.Println(sa[0])
-
 	for i := 0; i < len(sa); i++ {
 		rd := sa[i]
 		xd := strings.Split(rd, "|")
