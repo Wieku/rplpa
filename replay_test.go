@@ -32,9 +32,10 @@ func TestParseReplay(t *testing.T) {
 		t.Log("Mods: ", p.Mods)
 		t.Log("LifebarGraph: ", p.LifebarGraph)
 		t.Log("Timestamp: ", p.Timestamp)
-		for i := 0; i < len(p.ReplayData); i++ {
-			t.Log("ReplayData: ", p.ReplayData[i])
-			t.Log("KeyPressed: ", p.ReplayData[i].KeyPressed)
+		if len(p.ReplayData) > 20 {
+			t.Log("ReplayData: true")
+		} else {
+			t.Error("Error while parsing compressed.")
 		}
 	}
 }
@@ -48,8 +49,9 @@ func TestParseCompressed(t *testing.T) {
 	if err != nil {
 		t.Error("Could not parse replaydata", err)
 	}
-	for i := 0; i < len(p); i++ {
-		t.Log("ReplayData: ", p[i])
-		t.Log("KeyPressed: ", p[i].KeyPressed)
+	if len(p) > 20 {
+		t.Log("ReplayData: true")
+	} else {
+		t.Error("Error while parsing compressed.")
 	}
 }
