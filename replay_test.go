@@ -38,3 +38,18 @@ func TestParseReplay(t *testing.T) {
 		}
 	}
 }
+
+func TestParseCompressed(t *testing.T) {
+	b, err := ioutil.ReadFile("data/replay3_raw.bin")
+	if err != nil {
+		t.Error("Could not read replaydata, Doesn't exists?")
+	}
+	p, err := ParseCompressed(b)
+	if err != nil {
+		t.Error("Could not parse replaydata", err)
+	}
+	for i := 0; i < len(p); i++ {
+		t.Log("ReplayData: ", p[i])
+		t.Log("KeyPressed: ", p[i].KeyPressed)
+	}
+}
