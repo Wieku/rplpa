@@ -38,7 +38,7 @@ import (
 
 func main() {
   RawData := []byte{} // IDK, some data.
-  replaydata, err := ParseCompressed(b)
+  replaydata, err := ParseCompressed(RawData)
   if err != nil {
     panic(err)
   }
