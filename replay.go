@@ -2,7 +2,6 @@ package rplpa
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"strconv"
 	"strings"
