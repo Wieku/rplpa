@@ -185,7 +185,7 @@ func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 		}
 		rdata := ReplayData{
 			Time:       int64(Time),
-			MosueX:     float32(MouseX),
+			MouseX:     float32(MouseX),
 			MouseY:     float32(MouseY),
 			KeyPressed: &KP,
 		}

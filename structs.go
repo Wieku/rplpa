@@ -30,7 +30,7 @@ type Replay struct {
 // ReplayData is the Parsed Compressed Replay data.
 type ReplayData struct {
 	Time       int64
-	MosueX     float32
+	MouseX     float32
 	MouseY     float32
 	KeyPressed *KeyPressed
 }
