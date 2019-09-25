@@ -10,9 +10,9 @@ const (
 
 // ClickState
 const (
-	LEFTCLICK  = 2 << 0
-	RIGHTCLICK = 2 << 1
-	KEY1       = 2 << 2
-	KEY2       = 2 << 3
-	SMOKE      = 2 << 4
+	LEFTCLICK  = 1 << 0
+	RIGHTCLICK = 1 << 1
+	KEY1       = 1 << 2
+	KEY2       = 1 << 3
+	SMOKE      = 1 << 4
 )
