@@ -32,6 +32,7 @@ func TestParseReplay(t *testing.T) {
 		t.Log("Mods: ", p.Mods)
 		t.Log("LifebarGraph: ", p.LifebarGraph)
 		t.Log("Timestamp: ", p.Timestamp)
+		t.Log("ScoreID: ", p.ScoreID)
 		if len(p.ReplayData) > 20 {
 			t.Log("ReplayData: true")
 		} else {

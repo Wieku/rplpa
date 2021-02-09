@@ -98,11 +98,17 @@ func ParseReplay(file []byte) (r *Replay, err error) {
 	if err != nil {
 		return
 	}
-	compressedReplay, err = rSlice(b, slength)
-	if err != nil {
-		return
+	if slength > 0 {
+		compressedReplay, err = rSlice(b, slength)
+		if err != nil {
+			return
+		}
+		r.ReplayData, err = ParseCompressed(compressedReplay)
+		if err != nil {
+			return
+		}
 	}
-	r.ReplayData, err = ParseCompressed(compressedReplay)
+	r.ScoreID, err = rInt64(b)
 	if err != nil {
 		return
 	}
