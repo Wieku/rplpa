@@ -108,10 +108,15 @@ func ParseReplay(file []byte) (r *Replay, err error) {
 			return
 		}
 	}
-	r.ScoreID, err = rInt64(b)
-	if err != nil {
-		return
+
+	if b.Len() == 8 {
+		r.ScoreID, err = rInt64(b)
+	} else if b.Len() == 4 {
+		var sID int32
+		sID, err = rInt32(b)
+		r.ScoreID = int64(sID)
 	}
+
 	return
 }
 
