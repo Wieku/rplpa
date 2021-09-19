@@ -152,7 +152,9 @@ func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 	r := lzma.NewReader(b)
 	defer r.Close()
 
-	x, err := ioutil.ReadAll(r)
+	var x []byte
+
+	x, err = ioutil.ReadAll(r)
 	if err != nil {
 		return
 	}
