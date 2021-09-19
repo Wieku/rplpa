@@ -140,7 +140,7 @@ func parseLifebar(s string) []LifeBarGraph {
 		if err != nil {
 			continue
 		}
-		v, err := strconv.Atoi(y[0])
+		v, err := strconv.ParseFloat(y[0], 32)
 		o = append(o, LifeBarGraph{Time: int32(v), HP: float32(f)})
 	}
 	return o
@@ -167,14 +167,19 @@ func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 		if len(xd) < 4 {
 			continue
 		}
+
 		var Time int
 		var MouseX float64
 		var MouseY float64
 		var KPA int
-		Time, err = strconv.Atoi(xd[0])
+
+		tFloat, err := strconv.ParseFloat(xd[0], 32)
 		if err != nil {
 			return
 		}
+
+		Time = int(tFloat)
+
 		MouseX, err = strconv.ParseFloat(xd[1], 32)
 		if err != nil {
 			return
