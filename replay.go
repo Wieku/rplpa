@@ -168,17 +168,17 @@ func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 			continue
 		}
 
-		var Time int
+		var tFloat float64
 		var MouseX float64
 		var MouseY float64
 		var KPA int
 
-		tFloat, err := strconv.ParseFloat(xd[0], 32)
+		tFloat, err = strconv.ParseFloat(xd[0], 32)
 		if err != nil {
 			return
 		}
 
-		Time = int(tFloat)
+		Time := int(tFloat)
 
 		MouseX, err = strconv.ParseFloat(xd[1], 32)
 		if err != nil {
