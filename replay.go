@@ -2,7 +2,8 @@ package rplpa
 
 import (
 	"bytes"
-	"io/ioutil"
+	"fmt"
+	"io"
 	"strconv"
 	"strings"
 	"time"
@@ -17,107 +18,153 @@ func NewReplay() *Replay {
 
 // ParseReplay parses a Replay and returns a *Replay
 func ParseReplay(file []byte) (r *Replay, err error) {
-	var LifeBarRaw string
-	var ts int64
-	var slength int32
-	var compressedReplay []byte
 
 	b := bytes.NewBuffer(file)
 	r = NewReplay()
-	r.PlayMode, err = rInt8(b)
-	if err != nil {
-		return
+
+	if r.PlayMode, err = rInt8(b); err != nil {
+		return nil, fmt.Errorf("reading PlayMode: %s", err)
 	}
-	r.OsuVersion, err = rInt32(b)
-	if err != nil {
-		return
+
+	if r.OsuVersion, err = rInt32(b); err != nil {
+		return nil, fmt.Errorf("reading OsuVersion: %s", err)
 	}
-	r.BeatmapMD5, err = rBString(b)
-	if err != nil {
-		return
+
+	if r.BeatmapMD5, err = rBString(b); err != nil {
+		return nil, fmt.Errorf("reading BeatmapMD5: %s", err)
 	}
-	r.Username, err = rBString(b)
-	if err != nil {
-		return
+
+	if r.Username, err = rBString(b); err != nil {
+		return nil, fmt.Errorf("reading Username: %s", err)
 	}
-	r.ReplayMD5, err = rBString(b)
-	if err != nil {
-		return
+
+	if r.ReplayMD5, err = rBString(b); err != nil {
+		return nil, fmt.Errorf("reading ReplayMD5: %s", err)
 	}
-	r.Count300, err = rUInt16(b)
-	if err != nil {
-		return
+
+	if r.Count300, err = rUInt16(b); err != nil {
+		return nil, fmt.Errorf("reading Count300: %s", err)
 	}
-	r.Count100, err = rUInt16(b)
-	if err != nil {
-		return
+
+	if r.Count100, err = rUInt16(b); err != nil {
+		return nil, fmt.Errorf("reading Count100: %s", err)
 	}
-	r.Count50, err = rUInt16(b)
-	if err != nil {
-		return
+
+	if r.Count50, err = rUInt16(b); err != nil {
+		return nil, fmt.Errorf("reading Count50: %s", err)
 	}
-	r.CountGeki, err = rUInt16(b)
-	if err != nil {
-		return
+
+	if r.CountGeki, err = rUInt16(b); err != nil {
+		return nil, fmt.Errorf("reading CountGeki: %s", err)
 	}
-	r.CountKatu, err = rUInt16(b)
-	if err != nil {
-		return
+
+	if r.CountKatu, err = rUInt16(b); err != nil {
+		return nil, fmt.Errorf("reading CountKatu: %s", err)
 	}
-	r.CountMiss, err = rUInt16(b)
-	if err != nil {
-		return
+
+	if r.CountMiss, err = rUInt16(b); err != nil {
+		return nil, fmt.Errorf("reading CountMiss: %s", err)
 	}
-	r.Score, err = rInt32(b)
-	if err != nil {
-		return
+
+	if r.Score, err = rInt32(b); err != nil {
+		return nil, fmt.Errorf("reading Score: %s", err)
 	}
-	r.MaxCombo, err = rUInt16(b)
-	if err != nil {
-		return
+
+	if r.MaxCombo, err = rUInt16(b); err != nil {
+		return nil, fmt.Errorf("reading MaxCombo: %s", err)
 	}
-	r.Fullcombo, err = rBool(b)
-	if err != nil {
-		return
+
+	if r.Fullcombo, err = rBool(b); err != nil {
+		return nil, fmt.Errorf("reading Fullcombo: %s", err)
 	}
-	r.Mods, err = rUInt32(b)
-	if err != nil {
-		return
+
+	if r.Mods, err = rUInt32(b); err != nil {
+		return nil, fmt.Errorf("reading Mods: %s", err)
 	}
-	LifeBarRaw, err = rBString(b)
-	if err != nil {
-		return
+
+	var LifeBarRaw string
+	if LifeBarRaw, err = rBString(b); err != nil {
+		return nil, fmt.Errorf("reading LifeBar: %s", err)
 	}
+
 	r.LifebarGraph = parseLifebar(LifeBarRaw)
-	ts, err = rInt64(b)
-	if err != nil {
-		return
+
+	var ts int64
+	if ts, err = rInt64(b); err != nil {
+		return nil, fmt.Errorf("reading Timestamp: %s", err)
 	}
+
 	r.Timestamp = timeFromTicks(ts)
-	slength, err = rInt32(b)
-	if err != nil {
-		return
+
+	var cLength int32
+	if cLength, err = rInt32(b); err != nil {
+		return nil, fmt.Errorf("reading ReplayData length: %s", err)
 	}
-	if slength > 0 {
-		compressedReplay, err = rSlice(b, slength)
-		if err != nil {
-			return
+
+	if cLength > 0 {
+		var compressedReplay []byte
+
+		if compressedReplay, err = rSlice(b, cLength); err != nil {
+			return nil, fmt.Errorf("reading ReplayData: %s", err)
 		}
-		r.ReplayData, err = ParseCompressed(compressedReplay)
-		if err != nil {
-			return
+
+		if r.ReplayData, err = ParseCompressed(compressedReplay); err != nil {
+			return nil, fmt.Errorf("parsing ReplayData: %s", err)
 		}
 	}
 
 	if b.Len() == 8 {
-		r.ScoreID, err = rInt64(b)
+		if r.ScoreID, err = rInt64(b); err != nil {
+			return nil, fmt.Errorf("reading ScoreID: %s", err)
+		}
 	} else if b.Len() == 4 {
 		var sID int32
-		sID, err = rInt32(b)
+		if sID, err = rInt32(b); err != nil {
+			return nil, fmt.Errorf("reading ScoreID: %s", err)
+		}
+
 		r.ScoreID = int64(sID)
 	}
 
 	return
+}
+
+func WriteReplay(r *Replay) ([]byte, error) {
+	buf := bytes.NewBuffer(make([]byte, 0, 1024))
+
+	buf.Write(wInt8(r.PlayMode))
+	buf.Write(wInt32(r.OsuVersion))
+	buf.Write(wbString(r.BeatmapMD5))
+	buf.Write(wbString(r.Username))
+	buf.Write(wbString(r.ReplayMD5))
+	buf.Write(wUInt16(r.Count300))
+	buf.Write(wUInt16(r.Count100))
+	buf.Write(wUInt16(r.Count50))
+	buf.Write(wUInt16(r.CountGeki))
+	buf.Write(wUInt16(r.CountKatu))
+	buf.Write(wUInt16(r.CountMiss))
+	buf.Write(wInt32(r.Score))
+	buf.Write(wUInt16(r.MaxCombo))
+	buf.Write(wBool(r.Fullcombo))
+	buf.Write(wUInt32(r.Mods))
+	buf.Write(wbString(serializeLifebar(r.LifebarGraph)))
+	buf.Write(wInt64(ticksFromTime(r.Timestamp)))
+
+	if r.ReplayData != nil && len(r.ReplayData) > 0 {
+		data, err := SerializeFrames(r.ReplayData)
+		if err != nil {
+			return nil, err
+		}
+
+		buf.Write(wInt32(int32(len(data))))
+		buf.Write(data)
+	} else {
+		buf.Write(wInt32(0))
+	}
+
+	buf.Write(wUInt64(uint64(r.ScoreID)))
+
+	return buf.Bytes(), nil
 }
 
 // https://stackoverflow.com/questions/33144967/what-is-the-c-sharp-datetimeoffset-equivalent-in-go/33161703#33161703
@@ -125,6 +172,11 @@ func ParseReplay(file []byte) (r *Replay, err error) {
 func timeFromTicks(ticks int64) time.Time {
 	base := time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC).Unix()
 	return time.Unix(ticks/10000000+base, ticks%10000000).UTC()
+}
+
+func ticksFromTime(tim time.Time) int64 {
+	base := time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC).Unix()
+	return tim.UnixNano()/100 - base*10000000
 }
 
 func parseLifebar(s string) []LifeBarGraph {
@@ -146,69 +198,115 @@ func parseLifebar(s string) []LifeBarGraph {
 	return o
 }
 
+func serializeLifebar(l []LifeBarGraph) string {
+	sB := &strings.Builder{}
+
+	for i, b := range l {
+		sB.WriteString(fmt.Sprintf("%d|%f", b.Time, b.HP))
+
+		if i < len(l)-1 {
+			sB.WriteRune(',')
+		}
+	}
+
+	return sB.String()
+}
+
 // ParseCompressed parses a compressed replay, (ReplayData)
 func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 	b := bytes.NewBuffer(file)
 	r := lzma.NewReader(b)
 	defer r.Close()
 
-	var x []byte
-
-	x, err = ioutil.ReadAll(r)
-	if err != nil {
-		return
+	var data []byte
+	if data, err = io.ReadAll(r); err != nil {
+		return nil, fmt.Errorf("decompressing: %s", err)
 	}
 
-	s := strings.Trim(string(x), ",")
+	events := strings.Split(strings.Trim(string(data), ","), ",")
 
-	sa := strings.Split(s, ",")
-
-	for i := 0; i < len(sa); i++ {
-		rd := sa[i]
-		xd := strings.Split(rd, "|")
-		if len(xd) < 4 {
+	for i := 0; i < len(events); i++ {
+		spl := strings.Split(events[i], "|")
+		if len(spl) < 4 {
 			continue
 		}
 
-		var tFloat float64
+		var timeFloat float64
 		var MouseX float64
 		var MouseY float64
-		var KPA int
+		var keys int
 
-		tFloat, err = strconv.ParseFloat(xd[0], 32)
-		if err != nil {
-			return
+		if timeFloat, err = strconv.ParseFloat(spl[0], 32); err != nil {
+			return nil, fmt.Errorf("parsing Time on event %d: %s", i, err)
 		}
 
-		Time := int(tFloat)
+		if MouseX, err = strconv.ParseFloat(spl[1], 32); err != nil {
+			return nil, fmt.Errorf("parsing MouseX on event %d: %s", i, err)
+		}
 
-		MouseX, err = strconv.ParseFloat(xd[1], 32)
-		if err != nil {
-			return
+		if MouseY, err = strconv.ParseFloat(spl[2], 32); err != nil {
+			return nil, fmt.Errorf("parsing MouseY on event %d: %s", i, err)
 		}
-		MouseY, err = strconv.ParseFloat(xd[2], 32)
-		if err != nil {
-			return
+
+		if keys, err = strconv.Atoi(spl[3]); err != nil {
+			return nil, fmt.Errorf("parsing Keys on event %d: %s", i, err)
 		}
-		KPA, err = strconv.Atoi(xd[3])
-		if err != nil {
-			return
-		}
-		KP := KeyPressed{
-			LeftClick:  KPA&LEFTCLICK > 0,
-			RightClick: KPA&RIGHTCLICK > 0,
-			Key1:       KPA&KEY1 > 0,
-			Key2:       KPA&KEY2 > 0,
-			Smoke:      KPA&SMOKE > 0,
-		}
-		rdata := ReplayData{
-			Time:       int64(Time),
-			MouseX:     float32(MouseX),
-			MouseY:     float32(MouseY),
-			KeyPressed: &KP,
-		}
-		d = append(d, &rdata)
+
+		d = append(d, &ReplayData{
+			Time:   int64(timeFloat),
+			MouseX: float32(MouseX),
+			MouseY: float32(MouseY),
+			KeyPressed: &KeyPressed{
+				LeftClick:  keys&LEFTCLICK > 0,
+				RightClick: keys&RIGHTCLICK > 0,
+				Key1:       keys&KEY1 > 0,
+				Key2:       keys&KEY2 > 0,
+				Smoke:      keys&SMOKE > 0,
+			},
+		})
 	}
 
 	return
+}
+
+func SerializeFrames(data []*ReplayData) ([]byte, error) {
+	oB := bytes.NewBuffer(make([]byte, 0, 1024))
+
+	wr := lzma.NewWriter(oB)
+
+	for i, rD := range data {
+		var keys int
+
+		if rD.KeyPressed.LeftClick {
+			keys |= LEFTCLICK
+		}
+		if rD.KeyPressed.RightClick {
+			keys |= RIGHTCLICK
+		}
+		if rD.KeyPressed.Key1 {
+			keys |= KEY1
+		}
+		if rD.KeyPressed.Key2 {
+			keys |= KEY2
+		}
+		if rD.KeyPressed.Smoke {
+			keys |= SMOKE
+		}
+
+		if _, err := wr.Write([]byte(fmt.Sprintf("%d|%f|%f|%d", rD.Time, rD.MouseX, rD.MouseY, keys))); err != nil {
+			return nil, fmt.Errorf("writing event %d: %s", i, err)
+		}
+
+		if i < len(data)-1 {
+			if _, err := wr.Write([]byte(",")); err != nil {
+				return nil, fmt.Errorf("writing event %d: %s", i, err)
+			}
+		}
+	}
+
+	if err := wr.Close(); err != nil {
+		return nil, err
+	}
+
+	return oB.Bytes(), nil
 }

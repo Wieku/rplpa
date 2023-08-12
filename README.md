@@ -1,20 +1,22 @@
-# rplpa [![Build Status](https://travis-ci.org/Mempler/rplpa.svg?branch=master)](https://travis-ci.org/Mempler/rplpa)
+# rplpa
 
-rplpa is an Replay Parser for golang. \
-IDK for what you'll use it, but i'll use it for an anticheat.
+rplpa is an osu! replay parser/writer for golang.
 
-Example:
+## Examples:
+
+## Reading the replay
+
 ```go
 package main
 
 import (
   "ioutil"
 
-  "github.com/Mempler/rplpa"
+  "github.com/wieku/rplpa"
 )
 
 func main() {
-  buf, err := ioutil.ReadFile("path/to/replay.osr")
+  b, err := ioutil.ReadFile("path/to/replay.osr")
   if err != nil {
     panic(err)
   }
@@ -25,7 +27,7 @@ func main() {
 }
 ```
 
-or compressed replays
+## Reading compressed input data
 
 ```go
 package main
@@ -33,11 +35,11 @@ package main
 import (
   "ioutil"
 
-  "github.com/Mempler/rplpa"
+  "github.com/wieku/rplpa"
 )
 
 func main() {
-  RawData := []byte{} // IDK, some data.
+  RawData := []byte{} // Compressed LZMA stream of input events in delta1|x1|y1|keys1,delta2|x2|y2|keys2 format
   replaydata, err := ParseCompressed(RawData)
   if err != nil {
     panic(err)
