@@ -113,17 +113,25 @@ func ParseReplay(file []byte) (r *Replay, err error) {
 		}
 	}
 
-	if b.Len() == 8 {
-		if r.ScoreID, err = rInt64(b); err != nil {
-			return nil, fmt.Errorf("reading ScoreID: %s", err)
-		}
-	} else if b.Len() == 4 {
-		var sID int32
-		if sID, err = rInt32(b); err != nil {
-			return nil, fmt.Errorf("reading ScoreID: %s", err)
+	if r.ScoreID, err = rInt64(b); err != nil {
+		return nil, fmt.Errorf("reading ScoreID: %s", err)
+	}
+
+	var dLength int32
+	if dLength, err = rInt32(b); err != nil {
+		return nil, fmt.Errorf("reading ScoreInfo length: %s", err)
+	}
+
+	if dLength > 0 {
+		var compressedScoreInfo []byte
+
+		if compressedScoreInfo, err = rSlice(b, dLength); err != nil {
+			return nil, fmt.Errorf("reading ScoreInfo: %s", err)
 		}
 
-		r.ScoreID = int64(sID)
+		if err = ParseCompressedScoreInfo(compressedScoreInfo); err != nil {
+			return nil, fmt.Errorf("parsing ScoreInfo: %s", err)
+		}
 	}
 
 	return
@@ -268,6 +276,23 @@ func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 
 	return
 }
+
+// ParseCompressedScoreInfo parses compressed ScoreInfo, (ScoreInfo)
+func ParseCompressedScoreInfo(file []byte) (err error) {
+	b := bytes.NewBuffer(file)
+	r := lzma.NewReader(b)
+	defer r.Close()
+
+	var data []byte
+	if data, err = io.ReadAll(r); err != nil {
+		return fmt.Errorf("decompressing: %s", err)
+	}
+
+	//events := strings.Split(strings.Trim(string(data), ","), ",")
+	fmt.Printf("%s\n", data)
+	return
+}
+
 
 func SerializeFrames(data []*ReplayData) ([]byte, error) {
 	oB := bytes.NewBuffer(make([]byte, 0, 1024))
