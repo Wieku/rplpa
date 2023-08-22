@@ -25,8 +25,11 @@ type Replay struct {
 	Timestamp    time.Time
 	ReplayData   []*ReplayData
 	ScoreID      int64 // idk if it's the scoreid, maybe it is maybe not.
-	ScoreInfo    ScoreInfo
+	ScoreInfo    *ScoreInfo
 }
+
+// for stable plays
+type NoScoreInfo struct{}
 
 type ScoreInfo struct {
 	Mods              []*ModInfo
