@@ -8,14 +8,16 @@ import (
 func TestParseReplay(t *testing.T) {
 	b, err := ioutil.ReadFile("data/lazer.osr")
 	if err != nil {
-		t.Error("Could not read replay, Doesn't exists?")
+		t.Error("Could not read replay, Doesn't exist?")
 	}
+
 	p, err := ParseReplay(b)
 	if err != nil {
 		t.Error("Could not parse replay", err)
 	}
+
 	if p != nil {
-		t.Log("Playmode: ", p.PlayMode)
+		t.Log("PlayMode: ", p.PlayMode)
 		t.Log("OsuVersion: ", p.OsuVersion)
 		t.Log("BeatmapMD5: ", p.BeatmapMD5)
 		t.Log("Username: ", p.Username)
@@ -33,6 +35,18 @@ func TestParseReplay(t *testing.T) {
 		t.Log("LifebarGraph: ", p.LifebarGraph)
 		t.Log("Timestamp: ", p.Timestamp)
 		t.Log("ScoreID: ", p.ScoreID)
+
+		// Check ScoreInfo fields
+		if len(p.ScoreInfo.Mods) > 0 {
+			t.Log("ScoreInfo Mods: ", p.ScoreInfo.Mods)
+		}
+		if p.ScoreInfo.Statistics != nil {
+			t.Log("ScoreInfo Statistics: ", p.ScoreInfo.Statistics)
+		}
+		if len(p.ScoreInfo.MaximumStatistics) > 0 {
+			t.Log("ScoreInfo MaximumStatistics: ", p.ScoreInfo.MaximumStatistics)
+		}
+
 		if len(p.ReplayData) > 20 {
 			t.Log("ReplayData: true")
 		} else {
