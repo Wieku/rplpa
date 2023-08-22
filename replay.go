@@ -121,7 +121,7 @@ func ParseReplay(file []byte) (r *Replay, err error) {
 	var dLength int32
 	if dLength, err = rInt32(b); err != nil {
 		// This is the case where it is a stable play not a lazer play
-		if err == io.EOF {
+		if err.Error() == "EOF" {
 			return r, nil
 		}
 		return nil, fmt.Errorf("reading ScoreInfo length: %s", err)
