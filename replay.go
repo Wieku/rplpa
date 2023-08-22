@@ -124,15 +124,17 @@ func ParseReplay(file []byte) (r *Replay, err error) {
 	}
 
 	if dLength > 0 {
-		var compressedScoreInfo []byte
-
-		if compressedScoreInfo, err = rSlice(b, dLength); err != nil {
+		compressedScoreInfo, err := rSlice(b, dLength)
+		if err != nil {
 			return nil, fmt.Errorf("reading ScoreInfo: %s", err)
 		}
 
-		if err = ParseCompressedScoreInfo(compressedScoreInfo); err != nil {
+		scoreInfo, err := ParseCompressedScoreInfo(compressedScoreInfo)
+		if err != nil {
 			return nil, fmt.Errorf("parsing ScoreInfo: %s", err)
 		}
+
+		r.ScoreInfo = scoreInfo
 	}
 
 	return
@@ -279,21 +281,24 @@ func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 }
 
 // ParseCompressedScoreInfo parses compressed ScoreInfo, (ScoreInfo)
-func ParseCompressedScoreInfo(file []byte) (err error) {
+func ParseCompressedScoreInfo(file []byte) (ScoreInfo, error) {
 	b := bytes.NewBuffer(file)
 	r := lzma.NewReader(b)
 	defer r.Close()
 
-	var data []byte
-	if data, err = io.ReadAll(r); err != nil {
-		return fmt.Errorf("decompressing: %s", err)
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return ScoreInfo{}, fmt.Errorf("decompressing: %s", err)
 	}
 
-	var scoreInfo map[string]interface{}
+	fmt.Println("Raw Json Data:", string(data))
+
+	var scoreInfo ScoreInfo
 	if err := json.Unmarshal(data, &scoreInfo); err != nil {
-		return fmt.Errorf("parsing JSON: %s", err)
+		return ScoreInfo{}, fmt.Errorf("parsing JSON: %s", err)
 	}
-	return nil
+
+	return scoreInfo, nil
 }
 
 func SerializeFrames(data []*ReplayData) ([]byte, error) {
