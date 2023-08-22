@@ -25,22 +25,22 @@ type Replay struct {
 	Timestamp    time.Time
 	ReplayData   []*ReplayData
 	ScoreID      int64 // idk if it's the scoreid, maybe it is maybe not.
-	ScoreInfo    []*ScoreInfo
+	ScoreInfo    ScoreInfo
 }
 
 type ScoreInfo struct {
 	Mods              []*ModInfo
-	Statistics        []*Statistics
+	Statistics        *Statistics
 	MaximumStatistics []*MaximumStatistics
 }
 
 type ModInfo struct {
-	Acronym         string
-	Settings        string
-	SpeedChange     string
-	ApproachRate    string
-	ExtendedLimits  string
-	ClassicNoteLock string
+	Acronym         string                 `json:"acronym"`
+	Settings        map[string]interface{} `json:"settings,omitempty"`
+	SpeedChange     string                 `json:"speed_change,omitempty"`
+	ApproachRate    string                 `json:"approach_rate,omitempty"`
+	ExtendedLimits  string                 `json:"extended_limits,omitempty"`
+	ClassicNoteLock string                 `json:"classic_note_lock,omitempty"`
 }
 
 type Statistics struct {
