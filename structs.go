@@ -29,16 +29,16 @@ type Replay struct {
 }
 
 type ScoreInfo struct {
-	Mods		  []*ModInfo
+	Mods []*ModInfo
 }
 
 type ModInfo struct {
-	Acronym				string
-	Settings			string
-	SpeedChange			string	
-	ApproachRate		string
-	ExtendedLimits		string
-	ClassicNoteLock		string
+	Acronym         string
+	Settings        string
+	SpeedChange     string
+	ApproachRate    string
+	ExtendedLimits  string
+	ClassicNoteLock string
 }
 
 // ReplayData is the Parsed Compressed Replay data.
@@ -47,10 +47,6 @@ type ReplayData struct {
 	MouseX     float32
 	MouseY     float32
 	KeyPressed *KeyPressed
-}
-
-type ScoreInfo struct {
-	
 }
 
 // KeyPressed is the Parsed Compressed KeyPressed.
