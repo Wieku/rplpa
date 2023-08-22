@@ -2,6 +2,7 @@ package rplpa
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -288,11 +289,12 @@ func ParseCompressedScoreInfo(file []byte) (err error) {
 		return fmt.Errorf("decompressing: %s", err)
 	}
 
-	//events := strings.Split(strings.Trim(string(data), ","), ",")
-	fmt.Printf("%s\n", data)
-	return
+	var scoreInfo map[string]interface{}
+	if err := json.Unmarshal(data, &scoreInfo); err != nil {
+		return fmt.Errorf("parsing JSON: %s", err)
+	}
+	return nil
 }
-
 
 func SerializeFrames(data []*ReplayData) ([]byte, error) {
 	oB := bytes.NewBuffer(make([]byte, 0, 1024))
