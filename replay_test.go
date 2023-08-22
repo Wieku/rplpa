@@ -6,7 +6,7 @@ import (
 )
 
 func TestParseReplay(t *testing.T) {
-	b, err := ioutil.ReadFile("data/lazer.osr")
+	b, err := ioutil.ReadFile("data/replay1.osr")
 	if err != nil {
 		t.Error("Could not read replay, Doesn't exist?")
 	}
@@ -45,11 +45,9 @@ func TestParseReplay(t *testing.T) {
 			}
 			if len(p.ScoreInfo.MaximumStatistics) > 0 {
 				t.Log("ScoreInfo MaximumStatistics: ", p.ScoreInfo.MaximumStatistics)
-			} else {
-				t.Log("ScoreInfo is nil due to EOF (stable play)")
 			}
 		} else {
-			t.Log("ScoreInfo is nil")
+			t.Log("ScoreInfo is nil due to EOF (stable play)")
 		}
 	}
 }
