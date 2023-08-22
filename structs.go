@@ -25,6 +25,20 @@ type Replay struct {
 	Timestamp    time.Time
 	ReplayData   []*ReplayData
 	ScoreID      int64 // idk if it's the scoreid, maybe it is maybe not.
+	ScoreInfo    []*ScoreInfo
+}
+
+type ScoreInfo struct {
+	Mods		  []*ModInfo
+}
+
+type ModInfo struct {
+	Acronym				string
+	Settings			string
+	SpeedChange			string	
+	ApproachRate		string
+	ExtendedLimits		string
+	ClassicNoteLock		string
 }
 
 // ReplayData is the Parsed Compressed Replay data.
@@ -33,6 +47,10 @@ type ReplayData struct {
 	MouseX     float32
 	MouseY     float32
 	KeyPressed *KeyPressed
+}
+
+type ScoreInfo struct {
+	
 }
 
 // KeyPressed is the Parsed Compressed KeyPressed.
