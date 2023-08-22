@@ -6,7 +6,7 @@ import (
 )
 
 func TestParseReplay(t *testing.T) {
-	b, err := ioutil.ReadFile("data/replay1.osr")
+	b, err := ioutil.ReadFile("data/lazer.osr")
 	if err != nil {
 		t.Error("Could not read replay, Doesn't exists?")
 	}
