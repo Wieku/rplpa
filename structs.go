@@ -29,7 +29,9 @@ type Replay struct {
 }
 
 type ScoreInfo struct {
-	Mods []*ModInfo
+	Mods              []*ModInfo
+	Statistics        []*Statistics
+	MaximumStatistics []*MaximumStatistics
 }
 
 type ModInfo struct {
@@ -39,6 +41,23 @@ type ModInfo struct {
 	ApproachRate    string
 	ExtendedLimits  string
 	ClassicNoteLock string
+}
+
+type Statistics struct {
+	Miss          float64
+	Great         float64
+	SmallTickHit  float64
+	LargeTickMiss float64
+	SmallBonus    float64
+	Ok            float64
+	SmallTickMiss float64
+	LargeTickHit  float64
+	IgnoreMiss    float64
+}
+
+type MaximumStatistics struct {
+	*Statistics
+	LargeBonus float64
 }
 
 // ReplayData is the Parsed Compressed Replay data.
