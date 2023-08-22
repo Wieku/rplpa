@@ -1,4 +1,4 @@
-module github.com/kommtoby/rplpa
+module github.com/Wieku/rplpa
 
 go 1.16
 
