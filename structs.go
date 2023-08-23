@@ -28,9 +28,6 @@ type Replay struct {
 	ScoreInfo    *ScoreInfo
 }
 
-// for stable plays
-type NoScoreInfo struct{}
-
 type ScoreInfo struct {
 	Mods              []*ModInfo
 	Statistics        *Statistics
