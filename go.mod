@@ -1,4 +1,4 @@
-module github.com/Wieku/rplpa
+module github.com/wieku/rplpa
 
 go 1.16
 
