@@ -114,11 +114,11 @@ func ParseReplay(file []byte) (r *Replay, err error) {
 		}
 	}
 
-	if b.Len() == 8 {
+	if b.Len() >= 8 {
 		if r.ScoreID, err = rInt64(b); err != nil {
 			return nil, fmt.Errorf("reading ScoreID: %s", err)
 		}
-	} else if b.Len() == 4 {
+	} else if b.Len() >= 4 {
 		var sID int32
 		if sID, err = rInt32(b); err != nil {
 			return nil, fmt.Errorf("reading ScoreID: %s", err)
@@ -127,12 +127,12 @@ func ParseReplay(file []byte) (r *Replay, err error) {
 		r.ScoreID = int64(sID)
 	}
 
+	if b.Len() < 4 {
+		return r, nil
+	}
+
 	var dLength int32
 	if dLength, err = rInt32(b); err != nil {
-		// This is the case where it is a stable play not a lazer play
-		if err.Error() == "EOF" {
-			return r, nil
-		}
 		return nil, fmt.Errorf("reading ScoreInfo length: %s", err)
 	}
 
