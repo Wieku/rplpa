@@ -2,6 +2,7 @@ package rplpa
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -113,17 +114,43 @@ func ParseReplay(file []byte) (r *Replay, err error) {
 		}
 	}
 
-	if b.Len() == 8 {
+	if b.Len() >= 8 {
 		if r.ScoreID, err = rInt64(b); err != nil {
 			return nil, fmt.Errorf("reading ScoreID: %s", err)
 		}
-	} else if b.Len() == 4 {
+	} else if b.Len() >= 4 {
 		var sID int32
 		if sID, err = rInt32(b); err != nil {
 			return nil, fmt.Errorf("reading ScoreID: %s", err)
 		}
 
 		r.ScoreID = int64(sID)
+	}
+
+	if b.Len() < 4 {
+		return r, nil
+	}
+
+	var dLength int32
+	if dLength, err = rInt32(b); err != nil {
+		return nil, fmt.Errorf("reading ScoreInfo length: %s", err)
+	}
+
+	if dLength > 0 {
+		compressedScoreInfo, err := rSlice(b, dLength)
+		if err != nil {
+			return nil, fmt.Errorf("reading ScoreInfo: %s", err)
+		}
+
+		scoreInfo, err := ParseCompressedScoreInfo(compressedScoreInfo)
+		if err != nil {
+			return nil, fmt.Errorf("parsing ScoreInfo: %s", err)
+		}
+
+		r.ScoreInfo = &scoreInfo
+	} else if dLength == 0 {
+		// This is a secondary case where it is a stable play not a lazer play
+		r.ScoreInfo = nil
 	}
 
 	return
@@ -267,6 +294,27 @@ func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 	}
 
 	return
+}
+
+// ParseCompressedScoreInfo parses compressed ScoreInfo, (ScoreInfo)
+func ParseCompressedScoreInfo(file []byte) (ScoreInfo, error) {
+	b := bytes.NewBuffer(file)
+	r := lzma.NewReader(b)
+	defer r.Close()
+
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return ScoreInfo{}, fmt.Errorf("decompressing: %s", err)
+	}
+
+	fmt.Println("Raw Json Data:", string(data))
+
+	var scoreInfo ScoreInfo
+	if err := json.Unmarshal(data, &scoreInfo); err != nil {
+		return ScoreInfo{}, fmt.Errorf("parsing JSON: %s", err)
+	}
+
+	return scoreInfo, nil
 }
 
 func SerializeFrames(data []*ReplayData) ([]byte, error) {
