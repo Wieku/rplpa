@@ -2,11 +2,20 @@ package rplpa
 
 import (
 	"io/ioutil"
+	"os"
 	"testing"
 )
 
-func TestParseReplay(t *testing.T) {
-	b, err := ioutil.ReadFile("data/replay1.osr")
+func TestParseStableReplay(t *testing.T) {
+	parseTest(t, "data/replay1.osr")
+}
+
+func TestParseLazerReplay(t *testing.T) {
+	parseTest(t, "data/lazer.osr")
+}
+
+func parseTest(t *testing.T, filename string) {
+	b, err := os.ReadFile(filename)
 	if err != nil {
 		t.Error("Could not read replay, Doesn't exist?")
 	}
@@ -37,13 +46,18 @@ func TestParseReplay(t *testing.T) {
 		t.Log("ScoreID: ", p.ScoreID)
 
 		if p.ScoreInfo != nil {
+			t.Log("ScoreInfo Mods: ", len(p.ScoreInfo.Mods))
+
 			if len(p.ScoreInfo.Mods) > 0 {
-				t.Log("ScoreInfo Mods: ", p.ScoreInfo.Mods)
+				for _, m := range p.ScoreInfo.Mods {
+					t.Log("ScoreInfo Mod: ", *m)
+				}
 			}
 			if p.ScoreInfo.Statistics != nil {
 				t.Log("ScoreInfo Statistics: ", p.ScoreInfo.Statistics)
 			}
-			if len(p.ScoreInfo.MaximumStatistics) > 0 {
+
+			if p.ScoreInfo.MaximumStatistics != nil {
 				t.Log("ScoreInfo MaximumStatistics: ", p.ScoreInfo.MaximumStatistics)
 			}
 		} else {

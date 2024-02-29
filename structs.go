@@ -24,40 +24,19 @@ type Replay struct {
 	LifebarGraph []LifeBarGraph
 	Timestamp    time.Time
 	ReplayData   []*ReplayData
-	ScoreID      int64 // idk if it's the scoreid, maybe it is maybe not.
+	ScoreID      int64
 	ScoreInfo    *ScoreInfo
 }
 
 type ScoreInfo struct {
-	Mods              []*ModInfo
-	Statistics        *Statistics
-	MaximumStatistics []*MaximumStatistics
+	Mods              []*ModInfo               `json:"mods"`
+	Statistics        map[LazerHitResult]int64 `json:"statistics"`
+	MaximumStatistics map[LazerHitResult]int64 `json:"maximum_statistics"`
 }
 
 type ModInfo struct {
-	Acronym         string                 `json:"acronym"`
-	Settings        map[string]interface{} `json:"settings,omitempty"`
-	SpeedChange     string                 `json:"speed_change,omitempty"`
-	ApproachRate    string                 `json:"approach_rate,omitempty"`
-	ExtendedLimits  string                 `json:"extended_limits,omitempty"`
-	ClassicNoteLock string                 `json:"classic_note_lock,omitempty"`
-}
-
-type Statistics struct {
-	Miss          float64
-	Great         float64
-	SmallTickHit  float64
-	LargeTickMiss float64
-	SmallBonus    float64
-	Ok            float64
-	SmallTickMiss float64
-	LargeTickHit  float64
-	IgnoreMiss    float64
-}
-
-type MaximumStatistics struct {
-	*Statistics
-	LargeBonus float64
+	Acronym  string                 `json:"acronym"`
+	Settings map[string]interface{} `json:"settings,omitempty"`
 }
 
 // ReplayData is the Parsed Compressed Replay data.
