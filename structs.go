@@ -41,9 +41,9 @@ type ModInfo struct {
 
 // ReplayData is the Parsed Compressed Replay data.
 type ReplayData struct {
-	Time       int64
-	MouseX     float32
-	MouseY     float32
+	Time       float64 // Lazer is converting timestamps to int, but preparing just in case
+	MouseX     float64
+	MouseY     float64
 	KeyPressed *KeyPressed
 }
 

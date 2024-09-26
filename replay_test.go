@@ -44,6 +44,27 @@ func parseTest(t *testing.T, filename string) {
 		t.Log("LifebarGraph: ", p.LifebarGraph)
 		t.Log("Timestamp: ", p.Timestamp)
 		t.Log("ScoreID: ", p.ScoreID)
+		t.Log("InputEvents", len(p.ReplayData))
+
+		firstTime := p.ReplayData[0].Time
+		lastTime := p.ReplayData[0].Time
+
+		for i, d := range p.ReplayData {
+			if i == 0 {
+				continue
+			}
+
+			lastTime += d.Time
+
+			if lastTime < firstTime {
+				firstTime = lastTime
+			}
+		}
+
+		t.Log("First delta ms:", p.ReplayData[0].Time)
+		t.Log("Lowest input time ms:", firstTime)
+		t.Log("Last input time ms:", lastTime)
+		t.Log("Replay duration:", lastTime-firstTime)
 
 		if p.ScoreInfo != nil {
 			t.Log("ScoreInfo Mods: ", len(p.ScoreInfo.Mods))

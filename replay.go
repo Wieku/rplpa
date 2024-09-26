@@ -263,15 +263,15 @@ func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 		var MouseY float64
 		var keys int
 
-		if timeFloat, err = strconv.ParseFloat(spl[0], 32); err != nil {
+		if timeFloat, err = strconv.ParseFloat(spl[0], 64); err != nil {
 			return nil, fmt.Errorf("parsing Time on event %d: %s", i, err)
 		}
 
-		if MouseX, err = strconv.ParseFloat(spl[1], 32); err != nil {
+		if MouseX, err = strconv.ParseFloat(spl[1], 64); err != nil {
 			return nil, fmt.Errorf("parsing MouseX on event %d: %s", i, err)
 		}
 
-		if MouseY, err = strconv.ParseFloat(spl[2], 32); err != nil {
+		if MouseY, err = strconv.ParseFloat(spl[2], 64); err != nil {
 			return nil, fmt.Errorf("parsing MouseY on event %d: %s", i, err)
 		}
 
@@ -280,9 +280,9 @@ func ParseCompressed(file []byte) (d []*ReplayData, err error) {
 		}
 
 		d = append(d, &ReplayData{
-			Time:   int64(timeFloat),
-			MouseX: float32(MouseX),
-			MouseY: float32(MouseY),
+			Time:   timeFloat,
+			MouseX: MouseX,
+			MouseY: MouseY,
 			KeyPressed: &KeyPressed{
 				LeftClick:  keys&LEFTCLICK > 0,
 				RightClick: keys&RIGHTCLICK > 0,
@@ -341,7 +341,7 @@ func SerializeFrames(data []*ReplayData) ([]byte, error) {
 			keys |= SMOKE
 		}
 
-		if _, err := wr.Write([]byte(fmt.Sprintf("%d|%f|%f|%d", rD.Time, rD.MouseX, rD.MouseY, keys))); err != nil {
+		if _, err := wr.Write([]byte(fmt.Sprintf("%f|%f|%f|%d", rD.Time, rD.MouseX, rD.MouseY, keys))); err != nil {
 			return nil, fmt.Errorf("writing event %d: %s", i, err)
 		}
 
