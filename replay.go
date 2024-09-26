@@ -307,8 +307,6 @@ func ParseCompressedScoreInfo(file []byte) (ScoreInfo, error) {
 		return ScoreInfo{}, fmt.Errorf("decompressing: %s", err)
 	}
 
-	fmt.Println("Raw Json Data:", string(data))
-
 	var scoreInfo ScoreInfo
 	if err := json.Unmarshal(data, &scoreInfo); err != nil {
 		return ScoreInfo{}, fmt.Errorf("parsing JSON: %s", err)
