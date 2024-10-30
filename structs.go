@@ -29,6 +29,7 @@ type Replay struct {
 }
 
 type ScoreInfo struct {
+	ScoreId           int64                    `json:"online_id"`
 	Mods              []*ModInfo               `json:"mods"`
 	Statistics        map[LazerHitResult]int64 `json:"statistics"`
 	MaximumStatistics map[LazerHitResult]int64 `json:"maximum_statistics"`

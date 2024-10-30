@@ -148,6 +148,7 @@ func ParseReplay(file []byte) (r *Replay, err error) {
 		}
 
 		r.ScoreInfo = &scoreInfo
+		r.ScoreID = r.ScoreInfo.ScoreId
 	} else if dLength == 0 {
 		// This is a secondary case where it is a stable play not a lazer play
 		r.ScoreInfo = nil
